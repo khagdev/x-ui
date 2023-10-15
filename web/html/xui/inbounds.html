@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="vi">
+{{template "head" .}}
+<style>
+    @media (min-width: 769px) {
+        .ant-layout-content {
+	    margin-left: 0px;
+	    margin-right:0px; 
+	    margin-top:0px;
+        }
+    }
+
+    .ant-col-sm-24 {
+        margin-top: 10px;
+    }
+</style>
+<body>
+<a-layout id="app" v-cloak>
+    {{ template "commonSider" . }}
+    <a-layout id="content-layout">
+        <a-layout-content>
+            <a-spin :spinning="spinning" :delay="500" tip="loading">
+
+	      <!-- Topbar -->
+	      <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+
+                    <!-- Sidebar Toggle (Topbar) -->
+                    <!-- <button id="collapseMenuForcus" class="btn btn-link d-md-none rounded-circle mr-3">
+                        <i class="fa fa-bars"></i>
+                    </button> -->
+
+			<!-- Nav Item - User Information -->
+                        <li class="nav-item dropdown" style="list-style: none;">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span class="mr-2 d-none d-lg-inline text-gray-600 small">Administrator</span>
+                                <img class="img-profile rounded-circle"
+                                    src="https://avatars.githubusercontent.com/u/43093213?s=400&u=32591b34f6d90ea9fe09714ad42795185a989566&v=4">
+                            </a>
+                            <!-- Dropdown - User Information -->
+                            <div class="dropdown-menu dropdown-menu-left shadow animated--grow-in"
+                                aria-labelledby="userDropdown">
+                                <a class="dropdown-item" href="{{ .base_path }}xui">
+                                    <i class="fas fa-home fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    X-UI <sup>Unofficial</sup>
+                                </a>
+                                <a class="dropdown-item" href="{{ .base_path }}xui/inbounds">
+                                    <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Server VPN
+                                </a>
+                                <a class="dropdown-item" href="{{ .base_path }}xui/setting">
+                                    <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Cài đặt
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="" data-toggle="modal" data-target="#logoutModal">
+                                    <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Đăng xuất
+                                </a>
+                            </div>
+                        </li>
+
+			<div class="topbar-divider d-none d-sm-block"></div>
+
+                </nav>
+                <!-- End of Topbar -->
+
+                <transition name="list" appear>
+		<a-row style="margin-left:24px; margin-right:24px;">
+
+		    <!-- Page Heading -->
+                    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+			    <h1 class="h3 mb-0 text-gray-800">X-UI <sup> Unofficial</sup></h1>
+                        <a href="https://github.com/dopaemon/x-ui.git" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-github-alt fa-sm text-white-50"></i> Github <sup>Unofficial</sup></a>
+                    </div>
+
+                    <a-tag v-if="false" color="red" style="margin-bottom: 10px">
+			Vui lòng truy cập cài đặt bảng điều khiển càng sớm càng tốt để sửa đổi tên người dùng và mật khẩu, nếu không có thể có nguy cơ rò rỉ thông tin tài khoản.
+                    </a-tag>
+		</a-row>
+                </transition>
+                <transition name="list" appear>
+		<a-row style="margin-left:10px; margin-right:10px;">
+		     <a-col :sm="24" :md="12">
+			<div class="col-md-12 mb-4">
+                            <div class="card border-left-primary shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                                Tổng Data Thông Qua VPN</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">↑ [[ sizeFormat(total.up) ]] | ↓ [[ sizeFormat(total.down) ]] </div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+		    </a-col>
+		    <a-col :sm="24" :md="12">
+			<div class="col-md-12 mb-4">
+                            <div class="card border-left-success shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                                Tổng Data Đã Dùng</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800"> [[ sizeFormat(total.up + total.down) ]] </div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+		    </a-col>
+		    <a-col :sm="24" :md="12">
+			<div class="col-md-12 mb-4">
+                            <div class="card border-left-warning shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                                Tổng Số Server</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800"> [[ dbInbounds.length ]] </div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-comments fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+		    </a-col>
+		    <a-col :sm="24" :md="12">
+			<div class="col-md-12 mb-4">
+                            <div class="card border-left-danger shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                                                Đặt Lại Dung Lượng</div>
+                                            <div class="h6 mb-0 font-weight-bold text-gray-800">
+
+					    <div class="my-2"></div>
+                                                <a href="#" @click="resetallTraffic(dbInbounds)" class="btn btn-danger btn-icon-split btn-sm">
+                                                  <span class="icon text-white-50">
+                                                       <i class="fas fa-trash"></i>
+                                                  </span>
+                                                <span class="text">Xóa Toàn Bộ Data</span>
+                                                </a>
+
+					    </div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-backspace fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+		     </a-col> 
+                <!--    <a-card hoverable style="margin-bottom: 20px;">
+                        <a-row>
+                            <a-col :xs="24" :sm="24" :lg="12">
+                                Tổng Lưu Lượng Data ↑|↓：
+                                <a-tag color="green">[[ sizeFormat(total.up) ]] / [[ sizeFormat(total.down) ]]</a-tag>
+                            </a-col>
+                            <a-col :xs="24" :sm="24" :lg="12">
+                                Tổng Cộng:
+                                <a-tag color="green">[[ sizeFormat(total.up + total.down) ]]</a-tag>
+                            </a-col>
+                            <a-col :xs="24" :sm="24" :lg="12">
+                                Số Server：
+                                <a-tag color="green">[[ dbInbounds.length ]]</a-tag>
+                            </a-col>
+                            <a-col :xs="24" :sm="24" :lg="12">
+                                <a-button @click="resetallTraffic(dbInbounds)">Đặt lại tất cả lưu lượng</a-button>
+                            </a-col>
+                        </a-row>
+                    </a-card> -->
+		</a-row>
+                </transition>
+                <transition name="list" appear>
+		<a-row style="margin-left:24px; margin-right:24px;">
+
+			    <!-- Dropdown Card Example -->
+                            <div class="card shadow mb-4">
+                                <!-- Card Header - Dropdown -->
+                                <div
+                                    class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                    <h6 class="m-0 font-weight-bold text-primary">Danh Sách Server</h6>
+                                    <div class="dropdown no-arrow">
+                                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                                        </a>
+                                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
+                                            aria-labelledby="dropdownMenuLink">
+                                            <div class="dropdown-header">Menu:</div>
+                                            <a class="dropdown-item" @click="openAddInbound" href="#">Tạo Server</a>
+                                            <a class="dropdown-item" @click="resetallTraffic(dbInbounds)" href="#">Đặt Lại Dung Lượng</a>
+                                            <div class="dropdown-divider"></div>
+                                            <a class="dropdown-item" href="#">None</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Card Body -->
+                                <div class="card-body">
+
+                        <a-table :columns="columns" :row-key="dbInbound => dbInbound.id"
+                                 :data-source="dbInbounds"
+                                 :loading="spinning" :scroll="{ x: 1500 }"
+                                 :pagination="false"
+                                 style="margin-top: 20px"
+                                 @change="() => getDBInbounds()">
+                            <template slot="action" slot-scope="text, dbInbound">
+                                <a-dropdown :trigger="['click']">
+                                    <a @click="e => e.preventDefault()">Menu</a>
+                                    <a-menu slot="overlay" @click="a => clickAction(a, dbInbound)">
+                                        <a-menu-item v-if="dbInbound.hasLink()" key="qrcode">
+                                            <a-icon type="qrcode"></a-icon>Mã QR Scan
+                                        </a-menu-item>
+                                        <a-menu-item key="edit">
+                                            <a-icon type="edit"></a-icon>Chỉnh Sửa
+                                        </a-menu-item>
+                                        <a-menu-item key="resetTraffic">
+                                            <a-icon type="retweet"></a-icon>Đặt Lại Luồng
+                                        </a-menu-item>
+                                        <a-menu-item key="delete">
+                                            <span style="color: #FF4D4F">
+                                                <a-icon type="delete"></a-icon>Xóa Bỏ Server
+                                            </span>
+                                        </a-menu-item>
+                                    </a-menu>
+                                </a-dropdown>
+                            </template>
+                            <template slot="protocol" slot-scope="text, dbInbound">
+                                <a-tag color="blue">[[ dbInbound.protocol ]]</a-tag>
+                            </template>
+                            <template slot="traffic" slot-scope="text, dbInbound">
+                                <a-tag color="blue">[[ sizeFormat(dbInbound.up) ]] / [[ sizeFormat(dbInbound.down) ]]</a-tag>
+                                <template v-if="dbInbound.total > 0">
+                                    <a-tag v-if="dbInbound.up + dbInbound.down < dbInbound.total" color="cyan">[[ sizeFormat(dbInbound.total) ]]</a-tag>
+                                    <a-tag v-else color="red">[[ sizeFormat(dbInbound.total) ]]</a-tag>
+                                </template>
+                                <a-tag v-else color="green">Vô hạn</a-tag>
+                            </template>
+                            <template slot="settings" slot-scope="text, dbInbound">
+                                <a-button type="link" @click="showInfo(dbInbound)">Chi Tiết</a-button>
+                            </template>
+                            <template slot="stream" slot-scope="text, dbInbound, index">
+                                <template v-if="dbInbound.isVMess || dbInbound.isVLess || dbInbound.isTrojan || dbInbound.isSS">
+                                    <a-tag color="green">[[ inbounds[index].stream.network ]]</a-tag>
+                                    <a-tag v-if="inbounds[index].stream.isTls" color="blue">tls</a-tag>
+                                    <a-tag v-if="inbounds[index].stream.isXTls" color="blue">xtls</a-tag>
+                                </template>
+                                <template v-else>không có</template>
+                            </template>
+                            <template slot="enable" slot-scope="text, dbInbound">
+                                <a-switch v-model="dbInbound.enable" @change="switchEnable(dbInbound)"></a-switch>
+                            </template>
+                            <template slot="expiryTime" slot-scope="text, dbInbound">
+                                <template v-if="dbInbound.expiryTime > 0">
+                                    <a-tag v-if="dbInbound.isExpiry" color="red">
+                                        [[ DateUtil.formatMillis(dbInbound.expiryTime) ]]
+                                    </a-tag>
+                                    <a-tag v-else color="blue">
+                                        [[ DateUtil.formatMillis(dbInbound.expiryTime) ]]
+                                    </a-tag>
+                                </template>
+                                <a-tag v-else color="green">Vô thời hạn</a-tag>
+                            </template>
+                        </a-table>
+
+		       </div>
+                    </div>
+
+		</a-row>
+                </transition>
+            </a-spin>
+
+	    <!-- Footer -->
+            <footer class="sticky-footer bg-white" style="margin-top: 24px; margin-left: 0px; margin-right: 0px; margin-bottom: 0px;">
+                <div class="container my-auto">
+                    <div class="copyright text-center my-auto">
+                        <span>Copyright &copy; X-UI Unofficial</span>
+                    </div>
+                </div>
+            </footer>
+            <!-- End of Footer -->
+
+            <!-- Logout Modal-->
+            <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Bạn thực sự muốn đăng xuất ???</h5>
+                            <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                   <span aria-hidden="true">×</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">Khi chọn "Đăng xuất" bạn sẻ quay lại màn hình đăng nhập.</div>
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary" type="button" data-dismiss="modal">Trở lại</button>
+                            <a class="btn btn-primary" href="{{ .base_path }}logout">Đăng xuất</a>
+                        </div>
+                    </div>
+                </div>
+             </div>
+
+        </a-layout-content>
+    </a-layout>
+
+<!-- Bootstrap core JavaScript-->
+<script src="{{ .base_path }}assets/vendor/jquery/jquery.min.js"></script>
+<script src="{{ .base_path }}assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+<!-- Core plugin JavaScript-->
+<script src="{{ .base_path }}assets/vendor/jquery-easing/jquery.easing.min.js"></script>
+
+<!-- Custom scripts for all pages-->
+<script src="{{ .base_path }}assets/js/sb-admin-2.min.js"></script>
+
+<!-- Page level plugins -->
+<script src="{{ .base_path }}assets/vendor/chart.js/Chart.min.js"></script>
+
+<!-- Page level custom scripts -->
+<script src="{{ .base_path }}assets/js/demo/chart-area-demo.js"></script>
+<script src="{{ .base_path }}assets/js/demo/chart-pie-demo.js"></script>
+
+</a-layout>
+{{template "js" .}}
+<script>
+
+    const columns = [{
+	title: "Tùy chọn",
+        align: 'center',
+        width: 35,
+        scopedSlots: { customRender: 'action' },
+    }, {
+	title: "Trạng thái",
+        align: 'center',
+        width: 30,
+        scopedSlots: { customRender: 'enable' },
+    }, {
+	title: "Tên",
+        align: 'center',
+        width: 50,
+        dataIndex: "remark",
+    }, {
+        title: "Giao Thức",
+        align: 'center',
+        width: 35,
+        scopedSlots: { customRender: 'protocol' },
+    }, {
+        title: "Port",
+        align: 'center',
+        dataIndex: "port",
+        width: 35,
+    }, {
+        title: "Lưu Lượng ↑|↓",
+        align: 'center',
+        width: 50,
+        scopedSlots: { customRender: 'traffic' },
+    }, {
+        title: "Thông Tin Chi Tiết",
+        align: 'center',
+        width: 40,
+        scopedSlots: { customRender: 'settings' },
+    }, {
+        title: "Giao Thức Truyền Tải",
+        align: 'center',
+        width: 35,
+        scopedSlots: { customRender: 'stream' },
+    }, {
+        title: "Hạn sử dụng",
+        align: 'center',
+        width: 60,
+        scopedSlots: { customRender: 'expiryTime' },
+    }, {
+        title: "Địa chỉ liên lạc",
+        align: 'center',
+        width: 80,
+        dataIndex: "contact",
+    }];
+
+    const app = new Vue({
+        delimiters: ['[[', ']]'],
+        el: '#app',
+        data: {
+            siderDrawer,
+            spinning: false,
+            inbounds: [],
+            dbInbounds: [],
+            searchKey: '',
+        },
+        methods: {
+            loading(spinning=true) {
+                this.spinning = spinning;
+            },
+            async getDBInbounds() {
+                this.loading();
+                const msg = await HttpUtil.post('/xui/inbound/list');
+                this.loading(false);
+                if (!msg.success) {
+                    return;
+                }
+                this.setInbounds(msg.obj);
+            },
+            setInbounds(dbInbounds) {
+                this.inbounds.splice(0);
+                this.dbInbounds.splice(0);
+                for (const inbound of dbInbounds) {
+                    const dbInbound = new DBInbound(inbound);
+                    this.inbounds.push(dbInbound.toInbound());
+                    this.dbInbounds.push(dbInbound);
+                }
+            },
+            searchInbounds(key) {
+                if (ObjectUtil.isEmpty(key)) {
+                    this.searchedInbounds = this.dbInbounds.slice();
+                } else {
+                    this.searchedInbounds.splice(0, this.searchedInbounds.length);
+                    this.dbInbounds.forEach(inbound => {
+                        if (ObjectUtil.deepSearch(inbound, key)) {
+                            this.searchedInbounds.push(inbound);
+                        }
+                    });
+                }
+            },
+            clickAction(action, dbInbound) {
+                switch (action.key) {
+                    case "qrcode":
+                        this.showQrcode(dbInbound);
+                        break;
+                    case "edit":
+                        this.openEditInbound(dbInbound);
+                        break;
+                    case "resetTraffic":
+                        this.resetTraffic(dbInbound);
+                        break;
+                    case "delete":
+                        this.delInbound(dbInbound);
+                        break;
+                }
+            },
+            openAddInbound() {
+                inModal.show({
+                    title: 'Tạo acấu hình VPN mới',
+                    okText: 'Thêm vào',
+                    confirm: async (inbound, dbInbound) => {
+                        inModal.loading();
+                        await this.addInbound(inbound, dbInbound);
+                        inModal.close();
+                    }
+                });
+            },
+            openEditInbound(dbInbound) {
+                const inbound = dbInbound.toInbound();
+                inModal.show({
+                    title: 'Sửa cấu hình VPN',
+                    okText: 'Chấp Nhận',
+                    inbound: inbound,
+                    dbInbound: dbInbound,
+                    confirm: async (inbound, dbInbound) => {
+                        inModal.loading();
+                        await this.updateInbound(inbound, dbInbound);
+                        inModal.close();
+                    }
+                });
+            },
+            async addInbound(inbound, dbInbound) {
+                const data = {
+                    up: dbInbound.up,
+                    down: dbInbound.down,
+                    total: dbInbound.total,
+                    remark: dbInbound.remark,
+                    enable: dbInbound.enable,
+                    expiryTime: dbInbound.expiryTime,
+                    contact: dbInbound.contact,
+
+                    listen: inbound.listen,
+                    port: inbound.port,
+                    protocol: inbound.protocol,
+                    settings: inbound.settings.toString(),
+                    streamSettings: inbound.stream.toString(),
+                    sniffing: inbound.canSniffing() ? inbound.sniffing.toString() : '{}',
+                };
+                await this.submit('/xui/inbound/add', data, inModal);
+            },
+            async updateInbound(inbound, dbInbound) {
+                const data = {
+                    up: dbInbound.up,
+                    down: dbInbound.down,
+                    total: dbInbound.total,
+                    remark: dbInbound.remark,
+                    enable: dbInbound.enable,
+                    expiryTime: dbInbound.expiryTime,
+                    contact: dbInbound.contact,
+
+                    listen: inbound.listen,
+                    port: inbound.port,
+                    protocol: inbound.protocol,
+                    settings: inbound.settings.toString(),
+                    streamSettings: inbound.stream.toString(),
+                    sniffing: inbound.canSniffing() ? inbound.sniffing.toString() : '{}',
+                };
+                await this.submit(`/xui/inbound/update/${dbInbound.id}`, data, inModal);
+            },
+            resetTraffic(dbInbound) {
+                this.$confirm({
+                    title: 'Đặt Lại Luồng',
+                    content: 'Bạn có chắc chắn muốn thiết lập lại quy trình không ???',
+                    okText: 'Cài lại',
+                    cancelText: 'Hủy bỏ',
+                    onOk: () => {
+                        const inbound = dbInbound.toInbound();
+                        dbInbound.up = 0;
+                        dbInbound.down = 0;
+                        this.updateInbound(inbound, dbInbound);
+                    },
+                });
+            },
+            resetallTraffic(dbInbounds) {
+                for (const aInbound of dbInbounds) {
+                    const inbound = aInbound.toInbound();
+                    aInbound.down = 0;
+                    aInbound.up = 0;
+                    this.updateInbound(inbound, aInbound);
+                };
+            },
+            delInbound(dbInbound) {
+                this.$confirm({
+                    title: 'Xóa cấu hình VPN',
+                    content: 'Bạn có chắc chắn muốn xóa cấu hình VPN này không ?',
+                    okText: 'xóa bỏ',
+                    cancelText: 'Hủy bỏ',
+                    onOk: () => this.submit('/xui/inbound/del/' + dbInbound.id),
+                });
+            },
+            showQrcode(dbInbound) {
+                const link = dbInbound.genLink();
+                qrModal.show('Mã QR Scan', link);
+            },
+            showInfo(dbInbound) {
+                infoModal.show(dbInbound);
+            },
+            switchEnable(dbInbound) {
+                this.submit(`/xui/inbound/update/${dbInbound.id}`, dbInbound);
+            },
+            async submit(url, data, modal) {
+                const msg = await HttpUtil.postWithModal(url, data, modal);
+                if (msg.success) {
+                    await this.getDBInbounds();
+                }
+            },
+        },
+        watch: {
+            searchKey(value) {
+                this.searchInbounds(value);
+            }
+        },
+        mounted() {
+            this.getDBInbounds();
+        },
+        computed: {
+            total() {
+                let down = 0, up = 0;
+                for (let i = 0; i < this.dbInbounds.length; ++i) {
+                    down += this.dbInbounds[i].down;
+                    up += this.dbInbounds[i].up;
+                }
+                return {
+                    down: down,
+                    up: up,
+                };
+            }
+        },
+    });
+
+</script>
+{{template "inboundModal"}}
+{{template "promptModal"}}
+{{template "qrcodeModal"}}
+{{template "textModal"}}
+{{template "inboundInfoModal"}}
+</body>
+</html>
